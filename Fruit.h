@@ -19,7 +19,7 @@ public:
     Fruit();
 
     // Update location
-    void UpdateLocation();
+    void Drop();
 
     // Return X position
     int GetX();

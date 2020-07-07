@@ -49,7 +49,7 @@ public:
 
 private:
     // Pieces vector.
-    std::vector<Piece> pieces;
+    std::vector<Piece> snakeSize;
 
     // Dir variable
     int dir;

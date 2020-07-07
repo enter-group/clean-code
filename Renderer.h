@@ -15,20 +15,21 @@ class Renderer
 {
 public:
     // Draw Snake on screen
-    static void s_DrawSnake(Snake p_snake, WINDOW* p_w);
+    static void s_Render1(Snake p_snake, WINDOW* p_w);
 
     // Draw Fruit on Screen
-    static void s_DrawFruit(Fruit p_fruit, WINDOW* p_w);
+    static void s_Render3(Fruit p_fruit, WINDOW* p_w);
 
     // Update UI
-    static void s_UpdateScreen(WINDOW* p_w);
+    static void s_Render4(WINDOW* p_w);
     
     // Refresh Screen
-    static void s_RenderUI(Snake p_snake, int p_score, WINDOW* p_w);
+    static void s_RndrAll(Snake p_snake, int p_score, WINDOW* p_w);
 
     // Game Over Screen
-    static void s_ShowGameOver(WINDOW* p_w);
+    static void s_RenderText(WINDOW* p_w);
 
+    // Window rendering
     static WINDOW* s_MakeWindow();
 };
 

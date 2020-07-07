@@ -17,10 +17,10 @@ public:
     void SetPosition(int x, int y);
 
     // Get Position X
-    int GetPositionX();
+    int __x();
 
     // Get Position Y
-    int GetPositionY();
+    int __y();
 
     // Operator overload for comparison
     bool operator==(Piece bodyObjectToBeCompared);

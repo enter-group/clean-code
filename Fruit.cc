@@ -2,13 +2,13 @@
 
 Fruit::Fruit()
 {
-    UpdateLocation();
+    Drop();
 }
 
-void Fruit::UpdateLocation()
+void Fruit::Drop()
 {
-    c1 = rand()%17 + SCREEN_OFFST_X;
-    c2 = rand()%77 + SCREEN_OFFST_y;
+    c1 = rand()%17 + SCREEN_OFFST_y;
+    c2 = rand()%77 + SCREEN_OFFST_X;
 }
 
 int Fruit::GetX()

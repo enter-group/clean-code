@@ -34,11 +34,11 @@ void Loop(WINDOW *local_win, Snake& gameSnake, Fruit& myFruit, int& score)
         
         if (gameSnake.Crash())
         {
-             Renderer::s_ShowGameOver(local_win);
+             Renderer::s_RenderText(local_win);
 
              if (currentlyPressedKey == KEY_F(2))
              {
-                myFruit.UpdateLocation();
+                myFruit.Drop();
                 gameSnake.Setup();
                 score = 0;
                 direction = MovementDirection::NoDirection;
@@ -61,13 +61,13 @@ void Loop(WINDOW *local_win, Snake& gameSnake, Fruit& myFruit, int& score)
             gameSnake.UpdateCrash();
             gameSnake.Yummy(myFruit, score);
         
-            Renderer::s_RenderUI(gameSnake, score, local_win);
-            Renderer::s_DrawSnake(gameSnake, local_win);
-            Renderer::s_DrawFruit(myFruit, local_win);
+            Renderer::s_RndrAll(gameSnake, score, local_win);
+            Renderer::s_Render1(gameSnake, local_win);
+            Renderer::s_Render3(myFruit, local_win);
         }
 
         // Refresh Screen
-        Renderer::s_UpdateScreen(local_win);
+        Renderer::s_Render4(local_win);
 	}
 }
 

@@ -16,12 +16,12 @@ void Piece::SetPosition(int x, int y)
     this->y = y;
 }
 
-int Piece::GetPositionX()
+int Piece::__x()
 {
     return x;
 }
 
-int Piece::GetPositionY()
+int Piece::__y()
 {
     return y;
 }
