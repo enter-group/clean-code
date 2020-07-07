@@ -45,7 +45,7 @@ public:
     int Length();
 
     // Has eaten
-    bool Yummy(Fruit& in_out_fruit, int& out_score);
+    bool Yummy(Fruit& in_out_fruit, int& out_sc);
 
 private:
     // Pieces vector.

@@ -82,7 +82,7 @@ int Snake::GetDir()
     return dir;
 }
 
-bool Snake::Yummy(Fruit& in_out_fruit, int& out_score)
+bool Snake::Yummy(Fruit& in_out_fruit, int& out_sc)
 {
     if (std::count(snakeSize.begin(), snakeSize.end() - 1, in_out_fruit))
     {
@@ -90,7 +90,7 @@ bool Snake::Yummy(Fruit& in_out_fruit, int& out_score)
         auto it = snakeSize.begin();
 
         snakeSize.insert(it, snakeSize[0]);
-        out_score += 10 + snakeSize.size();
+        out_sc += 10 + snakeSize.size();
     }
 
     return true;
