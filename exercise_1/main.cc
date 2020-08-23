@@ -24,7 +24,7 @@ MoveD;
 void Loop(WINDOW *local_win, Snake& s, Fruit& f, int& sc)
 {
     auto currentlyPressedKey = 0;
-    auto dir = MoveD::noD;;
+    auto dir = MoveD::noD;
 
     // Loop until the user presses F1
     while((currentlyPressedKey = getch()) != KEY_F(1))
