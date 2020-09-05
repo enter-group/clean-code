@@ -10,70 +10,60 @@
 #include "Snake.h"
 #include "Fruit.h"
 #include "Renderer.h"
+#include "Direction.h"
+#include "GameConstants.h"
 
-typedef enum MoveD_t
+void RunGame(WINDOW *window, Snake& snake, Fruit& fruit, int& score)
 {
-    d1 = 0,
-    d2 = 1,
-    d3 = 2,
-    d4 = 3,
-    noD = 4
-}
-MoveD;
+    int pressedKey = 0;
+    Direction direction = Direction::none;
 
-void Loop(WINDOW *local_win, Snake& s, Fruit& f, int& sc)
-{
-    auto currentlyPressedKey = 0;
-    auto dir = MoveD::noD;
-
-    // Loop until the user presses F1
-    while((currentlyPressedKey = getch()) != KEY_F(1))
+    while((pressedKey = getch()) != KEY_F(1))
 	{	
-        // Sleep
-        std::this_thread::sleep_for(std::chrono::milliseconds(75));
+        // TODO: Use a delta time instead of sleep;
+        std::this_thread::sleep_for(std::chrono::milliseconds(frameDelayInMilliseconds));
         
-        if (s.Crash())
+        if (snake.HasCollided())
         {
-             Renderer::s_RenderText(local_win);
+             Renderer::ShowGameOverScreen(window);
 
-             if (currentlyPressedKey == KEY_F(2))
+             if (pressedKey == KEY_F(2))
              {
-                f.Drop();
-                s.Setup();
-                sc = 0;
-                dir = MoveD::noD;
+                fruit.PlaceAtRandomPosition();
+                snake.Reset();
+                score = 0;
+                direction = Direction::none;
              }
         }
         else
         {
-            switch (currentlyPressedKey)
+            switch (pressedKey)
             {
-                case KEY_DOWN:  dir = MoveD::d1; break;
-                case KEY_UP:    dir = MoveD::d2; break;
-                case KEY_LEFT:  dir = MoveD::d3; break;
-                case KEY_RIGHT: dir = MoveD::d4; break;
+                case KEY_DOWN:  direction = Direction::down; break;
+                case KEY_UP:    direction = Direction::up; break;
+                case KEY_LEFT:  direction = Direction::left; break;
+                case KEY_RIGHT: direction = Direction::right; break;
             }
 
-            if (dir != MoveD::noD)
-                s.SetD(static_cast<int>(dir));
+            if (direction != Direction::none)
+                snake.UpdateDirection(direction);
 
-            s.MoveMe();
-            s.UpdateCrash();
-            s.Yummy(f, sc);
+            snake.UpdatePosition();
+            snake.UpdateCollisionState();
+            snake.TryToEatFruit(fruit, score);
         
-            Renderer::s_RndrAll(s, sc, local_win);
-            Renderer::s_Render1(s, local_win);
-            Renderer::s_Render3(f, local_win);
+            Renderer::RenderUI(snake, score, window);
+            Renderer::RenderSneak(snake, window);
+            Renderer::RenderFruit(fruit, window);
         }
 
-        // Refresh Screen
-        Renderer::s_Render4(local_win);
+        Renderer::RefreshScreen(window);
 	}
 }
 
-void InitializeAll()
+void Initialize()
 {
-    srand (time(NULL));
+    srand(time(NULL));
     initscr();		
 	cbreak();	
     nodelay(stdscr, true);		
@@ -82,25 +72,23 @@ void InitializeAll()
     curs_set(0);
 }
 
-void FinalizeAll()
+void Finalize()
 {
     endwin();	
 }
 
 int main(int argc, char *argv[])
 {	
-   	
-    InitializeAll();
+    Initialize();
 
-        Fruit f;
-        Snake s;
-        int sc = 0;
-        auto w = Renderer::s_MakeNew();
+        Fruit fruit;
+        Snake snake;
+        int score = 0;
+        WINDOW* window = Renderer::MakeNewWindow();
 
-        // Run until the user presses F1
-        Loop(w, s, f, sc);
+        RunGame(window, snake, fruit, score);
 	
-    FinalizeAll();
+    Finalize();
 		
 	return 0;
 }

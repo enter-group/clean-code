@@ -4,53 +4,53 @@ using namespace std;
 
 Snake::Snake()
 {
-    Setup();
+    Reset();
 }
 
-void Snake::Setup()
+void Snake::Reset()
 {
-    collision = false;
-    dir = USE_OF_0X27;
+    hasCollided = false;
+    movingDirection = Direction::right;
     snakeSize.resize(0);
 
-    for (int i = 0; i < LEN0; i++)
+    for (int i = 0; i < initialBodyLength; i++)
     {
-        Piece seg1;
-        seg1.SetPosition(i, 1);
-        snakeSize.push_back(seg1);
+        Segment seg;
+        seg.SetPosition(i, intiialBodyYPosition);
+        snakeSize.push_back(seg);
     }
 }
 
-void Snake::SetD(int value)
+void Snake::UpdateDirection(Direction newDirection)
 {
-    if (value == 0 && dir != USE_OF_0X26) 
-        dir = USE_OF_0X28;
-    else if (value == 1 && dir != USE_OF_0X28) 
-        dir = USE_OF_0X26;
-    else if (value == 2 && dir != USE_OF_0X27) 
-        dir = USE_OF_0X25;
-    else if (value == 3 && dir != USE_OF_0X25) 
-        dir = USE_OF_0X27;
+    if (newDirection == Direction::down && movingDirection != Direction::up) 
+        movingDirection = Direction::down;
+    else if (newDirection == Direction::up && movingDirection != Direction::down) 
+        movingDirection = Direction::up;
+    else if (newDirection == Direction::left && movingDirection != Direction::right) 
+        movingDirection = Direction::left;
+    else if (newDirection == Direction::right && movingDirection != Direction::left) 
+        movingDirection = Direction::right;
 }
 
-bool Snake::Crash()
+bool Snake::HasCollided()
 {
-    return collision;
+    return hasCollided;
 }
 
-void Snake::MoveMe()
+void Snake::UpdatePosition()
 {
-    auto head = snakeSize[snakeSize.size() - 1];
-    auto x = head.__x();
-    auto y = head.__y();
+    Segment head = snakeSize[snakeSize.size() - 1];
+    int x = head.GetX();
+    int y = head.GetY();
 
-    if (dir == USE_OF_0X27)
+    if (movingDirection == Direction::right)
         x++;
-    else if (dir == USE_OF_0X28)
+    else if (movingDirection == Direction::down)
         y++;
-    else if (dir == USE_OF_0X25)
+    else if (movingDirection == Direction::left)
         x--;
-    else if (dir == USE_OF_0X26)
+    else if (movingDirection == Direction::up)
         y--;
 
     head.SetPosition(x, y);
@@ -58,18 +58,18 @@ void Snake::MoveMe()
     snakeSize.push_back(head);
 }
 
-void Snake::UpdateCrash()
+void Snake::UpdateCollisionState()
 {
-    auto head = snakeSize[snakeSize.size() - 1];
-    auto x = head.__x();
-    auto y = head.__y();
+    Segment head = snakeSize[snakeSize.size() - 1];
+    int x = head.GetX();
+    int y = head.GetY();
 
     if (std::count(snakeSize.begin(), snakeSize.end() - 1, head))
-        collision = true;
-    else if (x == 0 || x == 77)
-        collision = true;
-     else if (y == 0 || y == 19)
-        collision = true;
+        hasCollided = true;
+    else if (x == 0 || x == playfieldWidth - 1)
+        hasCollided = true;
+     else if (y == 0 || y == playfieldHeight - 1)
+        hasCollided = true;
 }
 
 int Snake::Length()
@@ -77,21 +77,19 @@ int Snake::Length()
     return snakeSize.size();
 }
 
-int Snake::GetDir()
+Direction Snake::GetDir()
 {
-    return dir;
+    return movingDirection;
 }
 
-bool Snake::Yummy(Fruit& in_out_fruit, int& out_sc)
+void Snake::TryToEatFruit(Fruit& fruit, int& score)
 {
-    if (std::count(snakeSize.begin(), snakeSize.end() - 1, in_out_fruit))
+    if (std::count(snakeSize.begin(), snakeSize.end() - 1, fruit))
     {
-        in_out_fruit.Drop();
+        fruit.PlaceAtRandomPosition();
         auto it = snakeSize.begin();
 
         snakeSize.insert(it, snakeSize[0]);
-        out_sc += 10 + snakeSize.size();
+        score += eatenFruitScoreIncrement + snakeSize.size();
     }
-
-    return true;
 }

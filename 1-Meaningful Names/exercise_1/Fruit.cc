@@ -2,21 +2,21 @@
 
 Fruit::Fruit()
 {
-    Drop();
+    PlaceAtRandomPosition();
 }
 
-void Fruit::Drop()
+void Fruit::PlaceAtRandomPosition()
 {
-    c1 = rand()%17 + SCREEN_OFFST_y;
-    c2 = rand()%77 + SCREEN_OFFST_X;
+    y = rand()%(playfieldHeight - 1);// + viewportVerticalOffset;
+    x = rand()%(playfieldWidth - 1);//  + viewportHorizontalOffset;
 }
 
 int Fruit::GetX()
 {
-    return c2;
+    return x;
 }
 
 int Fruit::GetY()
 {
-    return c1;
+    return y;
 }
