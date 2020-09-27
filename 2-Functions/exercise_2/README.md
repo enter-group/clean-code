@@ -19,6 +19,7 @@ Run the executable `CleanSnake` or run `make run` to start the game. Uses the ke
 
 
 **Screenshot**
+
 Due to the lack of color in MD, you'll not be able to see all the amazing aesthetics we've prepared for this version :P
 
 ```
