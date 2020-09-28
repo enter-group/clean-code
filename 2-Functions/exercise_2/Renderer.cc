@@ -8,11 +8,11 @@ void Renderer::Render(Stage& stage, Snake& snake, WINDOW* window, int score, boo
     }
     else
     {
-        werase(window);  
-        box(window, 0, 0);	
+        werase(window);
+        box(window, 0, 0);
         mvwprintw(window, 1, 1," Score: %d\tSize: %d", score, snake.Length());
         wmove(window, 2, 1);
-        whline(window, ACS_HLINE, windowWidth - 2);	
+        whline(window, ACS_HLINE, windowWidth - 2);
         mvprintw(windowHeight, 1, "Press F1 to exit");
 
         for (size_t i = 0; i < playfieldHeight; i++)
@@ -21,39 +21,40 @@ void Renderer::Render(Stage& stage, Snake& snake, WINDOW* window, int score, boo
             {
                 if (stage.GetRoomReference()[(i + stage.GetRoomVerticalOffset())*stage.GetRoomSize().width + (j + stage.GetRoomHorizontalOffset())] == 0)
                 {
-                    wattron(window, COLOR_PAIR(((((i%4 < 2? i : (i - 1))*4 + stage.GetRoomVerticalOffset())*stage.GetRoomSize().width + (j + stage.GetRoomHorizontalOffset()))%8) < 4? 1 : 2));   
-                    mvwaddch(window, i + viewportVerticalOffset, j + viewportHorizontalOffset, ACS_CKBOARD);      
-                    wattroff(window, COLOR_PAIR(((((i%4 < 2? i : (i - 1))*4 + stage.GetRoomVerticalOffset())*stage.GetRoomSize().width + (j + stage.GetRoomHorizontalOffset()))%8) < 4? 1 : 2));   
+                    int index = (i + stage.GetRoomVerticalOffset())*stage.GetRoomSize().width + (j + stage.GetRoomHorizontalOffset());
+                    wattron(window, COLOR_PAIR(index%4 < 2? 1 : 2));
+                    mvwaddch(window, i + viewportVerticalOffset, j + viewportHorizontalOffset, ACS_CKBOARD);
+                    wattroff(window, COLOR_PAIR(index%4 < 2? 1 : 2));
                 }
-                else if (stage.GetRoomReference()[(i + stage.GetRoomVerticalOffset())*stage.GetRoomSize().width + (j + stage.GetRoomHorizontalOffset())] == 1)  
+                else if (stage.GetRoomReference()[(i + stage.GetRoomVerticalOffset())*stage.GetRoomSize().width + (j + stage.GetRoomHorizontalOffset())] == 1)
                 {
                     wattron(window, COLOR_PAIR(8));
-                    mvwaddch(window, i + viewportVerticalOffset, j + viewportHorizontalOffset, ACS_CKBOARD);      
-                    wattroff(window, COLOR_PAIR(8));        
+                    mvwaddch(window, i + viewportVerticalOffset, j + viewportHorizontalOffset, ACS_CKBOARD);
+                    wattroff(window, COLOR_PAIR(8));
                 }
-                else if (stage.GetRoomReference()[(i + stage.GetRoomVerticalOffset())*stage.GetRoomSize().width + (j + stage.GetRoomHorizontalOffset())] == 2)  
-                {    
+                else if (stage.GetRoomReference()[(i + stage.GetRoomVerticalOffset())*stage.GetRoomSize().width + (j + stage.GetRoomHorizontalOffset())] == 2)
+                {
                     wattron(window, COLOR_PAIR(3));
                     mvwaddch(window, i + viewportVerticalOffset, j + viewportHorizontalOffset, '^');
-                    wattroff(window, COLOR_PAIR(3));  
+                    wattroff(window, COLOR_PAIR(3));
                 }
-                else if (stage.GetRoomReference()[(i + stage.GetRoomVerticalOffset())*stage.GetRoomSize().width + (j + stage.GetRoomHorizontalOffset())] == 3)  
-                {    
+                else if (stage.GetRoomReference()[(i + stage.GetRoomVerticalOffset())*stage.GetRoomSize().width + (j + stage.GetRoomHorizontalOffset())] == 3)
+                {
                     wattron(window, COLOR_PAIR(5));
                     mvwaddch(window, i + viewportVerticalOffset, j + viewportHorizontalOffset, '~');
-                    wattroff(window, COLOR_PAIR(5));  
+                    wattroff(window, COLOR_PAIR(5));
                 }
-                else if (stage.GetRoomReference()[(i + stage.GetRoomVerticalOffset())*stage.GetRoomSize().width + (j + stage.GetRoomHorizontalOffset())] == 4)  
-                {    
+                else if (stage.GetRoomReference()[(i + stage.GetRoomVerticalOffset())*stage.GetRoomSize().width + (j + stage.GetRoomHorizontalOffset())] == 4)
+                {
                     wattron(window, COLOR_PAIR(6));
                     mvwaddch(window, i + viewportVerticalOffset, j + viewportHorizontalOffset, '-');
-                    wattroff(window, COLOR_PAIR(6));  
+                    wattroff(window, COLOR_PAIR(6));
                 }
-                else if (stage.GetRoomReference()[(i + stage.GetRoomVerticalOffset())*stage.GetRoomSize().width + (j + stage.GetRoomHorizontalOffset())] == 100)  
-                {    
+                else if (stage.GetRoomReference()[(i + stage.GetRoomVerticalOffset())*stage.GetRoomSize().width + (j + stage.GetRoomHorizontalOffset())] == 100)
+                {
                     wattron(window, COLOR_PAIR(4));
                     mvwaddch(window, i + viewportVerticalOffset, j + viewportHorizontalOffset, ACS_DIAMOND);
-                    wattroff(window, COLOR_PAIR(4));  
+                    wattroff(window, COLOR_PAIR(4));
                 }
             }
         }
@@ -67,7 +68,7 @@ void Renderer::Render(Stage& stage, Snake& snake, WINDOW* window, int score, boo
             stage.SetRoomHorizontalOffset(stage.GetRoomHorizontalOffset() + 1);
         }
 
-        if (snake.GetHeadPosition().x <= playfieldWidth/2 && snake.GetDirection() == Direction::left && stage.GetRoomHorizontalOffset() > 0) 
+        if (snake.GetHeadPosition().x <= playfieldWidth/2 && snake.GetDirection() == Direction::left && stage.GetRoomHorizontalOffset() > 0)
         {
             Position newPos;
             newPos.x = snake.GetHeadPosition().x - 1;
@@ -85,7 +86,7 @@ void Renderer::Render(Stage& stage, Snake& snake, WINDOW* window, int score, boo
             stage.SetRoomVerticalOffset(stage.GetRoomVerticalOffset() + 1);
         }
 
-        if (snake.GetHeadPosition().y <= playfieldHeight/2 && snake.GetDirection() == Direction::up && stage.GetRoomVerticalOffset() > 0) 
+        if (snake.GetHeadPosition().y <= playfieldHeight/2 && snake.GetDirection() == Direction::up && stage.GetRoomVerticalOffset() > 0)
         {
             Position newPos;
             newPos.x = snake.GetHeadPosition().x;
@@ -97,12 +98,12 @@ void Renderer::Render(Stage& stage, Snake& snake, WINDOW* window, int score, boo
         for (auto i = 0; i < snake.Length(); i++)
         {
             wattron(window, COLOR_PAIR(7));
-            mvwaddch(window, snake.body[i].y + viewportVerticalOffset,  
+            mvwaddch(window, snake.body[i].y + viewportVerticalOffset,
                             snake.body[i].x + viewportHorizontalOffset, ACS_CKBOARD);
             wattroff(window, COLOR_PAIR(7));
         }
     }
-    wrefresh(window);	
+    wrefresh(window);
     refresh();
 }
 
@@ -112,8 +113,8 @@ WINDOW* Renderer::MakeNewWindow()
     WINDOW *window;
 
 	window = newwin(windowHeight, windowWidth, 0, 0);
-	box(window, 0 , 0);	
-	wrefresh(window);	
+	box(window, 0 , 0);
+	wrefresh(window);
 
 	return window;
 }
