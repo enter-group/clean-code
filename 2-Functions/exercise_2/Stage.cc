@@ -1,9 +1,9 @@
 #include "Stage.h"
 
-Stage::Stage(const uint8_t* roomReference, const size_t roomWitdh, const size_t roomHeight)
+Stage::Stage(const uint8_t* roomReference, Size roomSize)
 {
     ActiveRoom = nullptr;
-    Reset(roomReference, roomWitdh, roomHeight);
+    Reset(roomReference, roomSize);
 }
 
 Stage::~Stage()
@@ -11,42 +11,48 @@ Stage::~Stage()
     delete[] ActiveRoom;
 }
 
-void Stage::Reset(const uint8_t* roomReference, const size_t roomWitdh, const size_t roomHeight)
+void Stage::Reset(const uint8_t* roomReference, const Size roomSize)
 {
-    roomHorizontalOffset = 0;
-    roomVerticalOffset = 0;   
+    horizontalOffset = 0;
+    verticalOffset = 0;   
 
-    SetStageRoom(roomReference, roomWitdh, roomHeight);
+    SetStageRoom(roomReference, roomSize);
 }
 
-void Stage::SetStageRoom(const uint8_t* roomReference, const size_t roomWitdh, const size_t roomHeight)
+void Stage::SetStageRoom(const uint8_t* roomReference, Size roomSize)
 {
     if(ActiveRoom == nullptr)
-        ActiveRoom = new uint8_t[roomHeight*roomWitdh];
+        ActiveRoom = new uint8_t[roomSize.height*roomSize.width];
 
-    std::memcpy(ActiveRoom, roomReference, roomHeight*roomWitdh);
-    RoomSize.width = roomWitdh;
-    RoomSize.height = roomHeight;
+    std::memcpy(ActiveRoom, roomReference, roomSize.height*roomSize.width);
+    StageSize.width = roomSize.width;
+    StageSize.height = roomSize.height;
 }
 
-void Stage::SetRoomHorizontalOffset(int h)
+void Stage::SetStageHorizontalOffset(int h)
 {
-    roomHorizontalOffset = h;
+    horizontalOffset = h;
 }
 
-void Stage::SetRoomVerticalOffset(int v)
+void Stage::SetStageVerticalOffset(int v)
 {
-    roomVerticalOffset = v;
+    verticalOffset = v;
 }
 
-int Stage::GetRoomHorizontalOffset()
+void Stage::SetStageOffsets(int h, int v)
 {
-    return roomHorizontalOffset;
+    SetStageHorizontalOffset(h);
+    SetStageVerticalOffset(v);
 }
 
-int Stage::GetRoomVerticalOffset()
+int Stage::GetStageHorizontalOffset()
 {
-    return roomVerticalOffset;
+    return horizontalOffset;
+}
+
+int Stage::GetStageVerticalOffset()
+{
+    return verticalOffset;
 }
 
 uint8_t* Stage::GetRoomReference()
@@ -54,7 +60,25 @@ uint8_t* Stage::GetRoomReference()
     return ActiveRoom;
 }
 
-Size Stage::GetRoomSize()
+Size Stage::GetStageSize()
 {
-    return RoomSize;
+    return StageSize;
+}
+
+uint8_t Stage::GetTileAt(Position pos)
+{
+    return GetRoomReference()[(pos.y)*GetStageSize().width + (pos.x)];
+}
+
+void Stage::SetTileAt(Position pos, uint8_t tileType)
+{
+    GetRoomReference()[(pos.y)*GetStageSize().width + (pos.x)] = tileType;
+}
+
+Position Stage::ScreenToGlobalPosition(Position position)
+{
+    Position pos;
+    pos.x = position.x + horizontalOffset;
+    pos.y = position.y + verticalOffset;
+    return pos;
 }

@@ -5,6 +5,8 @@ struct Position
 {
     int x;
     int y;
+
+    static Position MakePosition(int x, int y);
 };
 
 #endif // POSITION_H_

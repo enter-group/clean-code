@@ -4,19 +4,20 @@
 #include <cstdint>
 #include <stdlib.h>
 #include <vector>
+
 #include "GameConstants.h"
 #include "Position.h"
 #include "Stage.h"
 
 class FruitFactory
 {
-
 public:
-    FruitFactory(Stage& stage);
+    void Reset(Stage& stage);
     void CreateFruitAtRandomPosition(Stage& stage);
 
 private:
-    std::vector<Position> fruits;
+    Position GenerateRandomPosition(Stage& stage);
+    
 };
 
 #endif // FRUIT_FACTORY_H_

@@ -1,8 +1,8 @@
 #ifndef GAME_CONSTANTS_H_
 #define GAME_CONSTANTS_H_
 
-const int frameDelayInMilliseconds = 65;
-const int frameDelayInMilliseconds2 = 85;
+const int horizontalDelayInMilliseconds = 65;
+const int verticalDelayInMilliseconds = 85;
 
 const int viewportHorizontalOffset = 1;
 const int viewportVerticalOffset = 3;

@@ -14,21 +14,29 @@
 class Stage
 {
 public:
-    Stage(const uint8_t* roomReference, const size_t roomWitdh, const size_t roomHeight);
+    Stage(const uint8_t* roomReference, const Size roomSize);
     ~Stage();
-    void SetStageRoom(const uint8_t* roomReference, const size_t roomWitdh, const size_t roomHeight);
-    void SetRoomHorizontalOffset(int h);
-    void SetRoomVerticalOffset(int v);
-    int GetRoomHorizontalOffset();
-    int GetRoomVerticalOffset();
+
+    void Reset(const uint8_t* roomReference, const Size roomSize);
+    void SetTileAt(Position pos, uint8_t tileType);
+    void SetStageRoom(const uint8_t* roomReference, const Size roomSize);
+    void SetStageHorizontalOffset(int h);
+    void SetStageVerticalOffset(int v);
+    void SetStageOffsets(int h, int v);
+
+    int GetStageHorizontalOffset();
+    int GetStageVerticalOffset();
+
     uint8_t* GetRoomReference();
-    Size GetRoomSize();
-    void Reset(const uint8_t* roomReference, const size_t roomWitdh, const size_t roomHeight);
+    uint8_t GetTileAt(Position pos);
+
+    Size GetStageSize();
+    Position ScreenToGlobalPosition(Position position);
 
 private:
-    int roomHorizontalOffset;
-    int roomVerticalOffset;    
-    Size RoomSize;
+    int horizontalOffset;
+    int verticalOffset;    
+    Size StageSize;
     uint8_t* ActiveRoom;
 };
 

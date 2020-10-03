@@ -1,6 +1,6 @@
 #include "FruitFactory.h"
 
-FruitFactory::FruitFactory(Stage& stage)
+void FruitFactory::Reset(Stage& stage)
 {
     CreateFruitAtRandomPosition(stage);
     CreateFruitAtRandomPosition(stage);
@@ -9,15 +9,19 @@ FruitFactory::FruitFactory(Stage& stage)
 
 void FruitFactory::CreateFruitAtRandomPosition(Stage& stage)
 {
+    Position pos = GenerateRandomPosition(stage);
+    stage.GetRoomReference()[(pos.y*stage.GetStageSize().width) + pos.x] = 100;
+}
+
+Position FruitFactory::GenerateRandomPosition(Stage& stage)
+{
     Position pos;
     do
     {
-        pos.y = rand()%(stage.GetRoomSize().height - 1);
-        pos.x = rand()%(stage.GetRoomSize().width - 1);
+        pos.y = rand()%(stage.GetStageSize().height - 1);
+        pos.x = rand()%(stage.GetStageSize().width - 1);
     } 
-    while (stage.GetRoomReference()[(pos.y*stage.GetRoomSize().width) + pos.x] != 0);
+    while (stage.GetRoomReference()[(pos.y*stage.GetStageSize().width) + pos.x] != 0);
     
-    stage.GetRoomReference()[(pos.y*stage.GetRoomSize().width) + pos.x] = 100;
-
-    fruits.push_back(pos);
+    return pos;
 }

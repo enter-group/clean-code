@@ -20,18 +20,39 @@ public:
 
     void Reset();
     void UpdateDirection(Direction newDirection);
-    Direction GetDirection();
-    bool HasCollided();
-    void UpdateCollisionState(Stage& stage, int& score, bool& operationStatus);
+    void CalculateCollisionsWithHazards(Stage& stage);
+    void CalculateCollisionsWithFruits(Stage& stage);
+    void PlaceBodyAtPosition(Position position);
     void UpdatePosition();
+    void ClearHasEatenFruitThisFrame();
+    void ClearHasCollided();
+    void AddNewSegment();
+    
+    bool HasCollided(); 
+    bool HasEatenFruitThisFrame();
+    
     int Length();
-    void SetPosition(Position position);
-    Position GetHeadPosition();
+    
+    Position GetHeadLocalPosition();
+    Direction GetDirection();
 
 private:
+    void ResetSnakeBody();
+    void MoveBodyToNewPosition(Position position);
+
+    bool HasCollidedWithBody();
+    bool HasCollidedWithWalls(Stage& stage);
+    bool HadCollidedWithHazards(int tile);
+    bool HadCollidedWithFruit(int tile);
+
+    Position CalculateNewPosition();
+    Segment GetHead();
+    Position CalculateHeadGlobalPosition(Stage& stage);
+
     std::vector<Segment> body;
     Direction movingDirection;
     bool hasCollided;
+    bool hasEatenFruitThisFrame;
 };
 
 #endif // SNAKE_H_
