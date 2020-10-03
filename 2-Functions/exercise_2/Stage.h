@@ -15,6 +15,7 @@ class Stage
 {
 public:
     Stage(const uint8_t* roomReference, const size_t roomWitdh, const size_t roomHeight);
+    ~Stage();
     void SetStageRoom(const uint8_t* roomReference, const size_t roomWitdh, const size_t roomHeight);
     void SetRoomHorizontalOffset(int h);
     void SetRoomVerticalOffset(int v);

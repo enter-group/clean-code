@@ -2,7 +2,13 @@
 
 Stage::Stage(const uint8_t* roomReference, const size_t roomWitdh, const size_t roomHeight)
 {
+    ActiveRoom = nullptr;
     Reset(roomReference, roomWitdh, roomHeight);
+}
+
+Stage::~Stage()
+{
+    delete[] ActiveRoom;
 }
 
 void Stage::Reset(const uint8_t* roomReference, const size_t roomWitdh, const size_t roomHeight)
