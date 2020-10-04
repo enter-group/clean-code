@@ -60,7 +60,6 @@ Position Snake::CalculateNewPosition()
     else if (movingDirection == Direction::down) pos.y++;
     else if (movingDirection == Direction::left) pos.x--;
     else if (movingDirection == Direction::up) pos.y--;
-    
     return pos;
 }
 
@@ -74,7 +73,6 @@ Position Snake::CalculateHeadGlobalPosition(Stage& stage)
 {
     Position pos = Position::MakePosition(GetHead().GetX(), GetHead().GetY());
     pos = stage.ScreenToGlobalPosition(pos);
-
     return pos;
 }
 
@@ -86,7 +84,6 @@ bool Snake::HasCollidedWithBody()
 bool Snake::HasCollidedWithWalls(Stage& stage)
 {
     Position globalPosition = CalculateHeadGlobalPosition(stage);
-
     return globalPosition.x == 0 || 
            globalPosition.x == stage.GetStageSize().width - 1 || 
            globalPosition.y == 0 || 

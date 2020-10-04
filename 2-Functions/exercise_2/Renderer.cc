@@ -119,14 +119,24 @@ void Renderer::RenderStageSection(Stage &stage)
         }
 }
 
-void Renderer::RenderHUD(int score, int length)
+void Renderer::RenderHUDText(int score, int length)
+{
+    mvwprintw(window, 1, 1," Score: %d\tSize: %d", score, length);
+    mvprintw(windowHeight, 1, "Press F1 to exit");
+}
+
+void Renderer::RenderWindow()
 {
     werase(window);
     box(window, 0, 0);
-    mvwprintw(window, 1, 1," Score: %d\tSize: %d", score, length);
     wmove(window, 2, 1);
     whline(window, ACS_HLINE, windowWidth - 2);
-    mvprintw(windowHeight, 1, "Press F1 to exit");
+}
+
+void Renderer::RenderHUD(int score, int length)
+{
+    RenderWindow();
+    RenderHUDText(score, length);
 }
 
 void Renderer::ScrollScreenElements(Snake& snake, Stage& stage)

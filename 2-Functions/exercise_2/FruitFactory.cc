@@ -2,9 +2,8 @@
 
 void FruitFactory::Reset(Stage& stage)
 {
-    CreateFruitAtRandomPosition(stage);
-    CreateFruitAtRandomPosition(stage);
-    CreateFruitAtRandomPosition(stage);
+    for (size_t i = 0; i < 3; i++)
+        CreateFruitAtRandomPosition(stage);
 }
 
 void FruitFactory::CreateFruitAtRandomPosition(Stage& stage)

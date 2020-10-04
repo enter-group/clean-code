@@ -32,6 +32,8 @@ private:
     static void RenderWoodTile(Position position);
     static void RenderFruitTile(Position position);
     static void SetCharacterOnScren(int character, Position position, int colorIndex);
+    static void RenderHUDText(int score, int length);
+    static void RenderWindow();
 
     static bool ShouldScrollRight(Snake& snake, Stage& stage);
     static bool ShouldScrollLeft(Snake& snake, Stage& stage);

@@ -9,16 +9,13 @@
 #include "Renderer.h"
 #include "GameLogic.h"
 
+const int backgroundColor[] = {46, 40, 232, 160, 21, 130, 231, 242};
+const int foregroundColor[] = {46, 40, 255, 46, 75, 130, 231, 240};
+
 void InitializeColors()
 {
-    init_pair(1, 46, 46);
-    init_pair(2, 40, 40);
-    init_pair(3, 232, 255);
-    init_pair(4, 160, 46);
-    init_pair(5, 21, 75);
-    init_pair(6, 130, 130);
-    init_pair(7, 231, 231);
-    init_pair(8, 242, 240);
+    for (size_t i = 0; i < 8; i++)
+        init_pair(i + 1, backgroundColor[i], foregroundColor[i]);
 }
 
 void InitializeNCurses()
