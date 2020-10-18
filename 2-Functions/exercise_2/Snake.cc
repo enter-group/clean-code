@@ -7,12 +7,8 @@ Snake::Snake()
     Reset();
 }
 
-void Snake::Reset()
+void Snake::ResetSnakeBody()
 {
-    hasCollided = false;
-    movingDirection = Direction::right;
-    body.resize(0);
-
     for (int i = 0; i < initialBodyLength; i++)
     {
         Segment seg;
@@ -21,16 +17,26 @@ void Snake::Reset()
     }
 }
 
+void Snake::Reset()
+{
+    hasCollided = false;
+    hasEatenFruitThisFrame = false;
+    movingDirection = Direction::right;
+    body.resize(0);
+    ResetSnakeBody();
+}
+
 void Snake::UpdateDirection(Direction newDirection)
 {
-    if (newDirection == Direction::down && movingDirection != Direction::up) 
-        movingDirection = Direction::down;
-    else if (newDirection == Direction::up && movingDirection != Direction::down) 
-        movingDirection = Direction::up;
-    else if (newDirection == Direction::left && movingDirection != Direction::right) 
-        movingDirection = Direction::left;
-    else if (newDirection == Direction::right && movingDirection != Direction::left) 
-        movingDirection = Direction::right;
+    if (newDirection == Direction::down && movingDirection != Direction::up) movingDirection = Direction::down;
+    else if (newDirection == Direction::up && movingDirection != Direction::down) movingDirection = Direction::up;
+    else if (newDirection == Direction::left && movingDirection != Direction::right) movingDirection = Direction::left;
+    else if (newDirection == Direction::right && movingDirection != Direction::left)  movingDirection = Direction::right;
+}
+
+Segment Snake::GetHead()
+{
+    return body[body.size() - 1];
 }
 
 bool Snake::HasCollided()
@@ -38,66 +44,85 @@ bool Snake::HasCollided()
     return hasCollided;
 }
 
-void Snake::UpdatePosition()
+void Snake::MoveBodyToNewPosition(Position position)
 {
-    Segment head = body[body.size() - 1];
-    int x = head.GetX();
-    int y = head.GetY();
-
-    if (movingDirection == Direction::right)
-        x++;
-    else if (movingDirection == Direction::down)
-        y++;
-    else if (movingDirection == Direction::left)
-        x--;
-    else if (movingDirection == Direction::up)
-        y--;
-
-    head.SetPosition(x, y);
+    Segment head = GetHead();
+    head.SetPosition(position.x, position.y);
     body.erase(body.begin());
     body.push_back(head);
 }
 
-void Snake::UpdateCollisionState(Stage& stage, int& score, bool& operationStatus)
+Position Snake::CalculateNewPosition()
 {
-    Segment head = body[body.size() - 1];
-    head.SetPosition(head.GetX() + stage.GetRoomHorizontalOffset(), head.GetY() + stage.GetRoomVerticalOffset());
-    uint32_t x = head.GetX();
-    uint32_t y = head.GetY();
+    Position pos = GetHeadLocalPosition();
 
-    int currentTile = stage.GetRoomReference()[(y)*stage.GetRoomSize().width + (x)];
-    if (std::count(body.begin(), body.end() - 1, body[body.size() - 1]))
-        hasCollided = true;
-    else if (x == 0 || x == stage.GetRoomSize().width - 1)
-        hasCollided = true;
-     else if (y == 0 || y == stage.GetRoomSize().height - 1)
-        hasCollided = true;
-    else if (currentTile == 1 ||
-             currentTile == 2 || 
-             currentTile == 3)
-    {
-        hasCollided = true;
-    }
-    else
-    {
-        if (stage.GetRoomReference()[(y)*stage.GetRoomSize().width + (x)] == 100)
-        {
-            stage.GetRoomReference()[(y)*stage.GetRoomSize().width + (x)] = 0;
-        
-            auto it = body.begin();
-            body.insert(it, body[0]);
-            score += eatenFruitScoreIncrement + body.size();
-
-            operationStatus = true;
-            return;
-        }
-
-        operationStatus = false;
-    }
-    
+    if (movingDirection == Direction::right) pos.x++;
+    else if (movingDirection == Direction::down) pos.y++;
+    else if (movingDirection == Direction::left) pos.x--;
+    else if (movingDirection == Direction::up) pos.y--;
+    return pos;
 }
 
-void Snake::SetPosition(Position position)
+void Snake::UpdatePosition()
+{
+    Position pos = CalculateNewPosition();
+    MoveBodyToNewPosition(pos);
+}
+
+Position Snake::CalculateHeadGlobalPosition(Stage& stage)
+{
+    Position pos = Position::MakePosition(GetHead().GetX(), GetHead().GetY());
+    pos = stage.ScreenToGlobalPosition(pos);
+    return pos;
+}
+
+bool Snake::HasCollidedWithBody()
+{
+    return std::count(body.begin(), body.end() - 1, body[body.size() - 1]);
+}
+
+bool Snake::HasCollidedWithWalls(Stage& stage)
+{
+    Position globalPosition = CalculateHeadGlobalPosition(stage);
+    return globalPosition.x == 0 || 
+           globalPosition.x == stage.GetStageSize().width - 1 || 
+           globalPosition.y == 0 || 
+           globalPosition.y == stage.GetStageSize().height - 1;
+}
+
+bool Snake::HadCollidedWithHazards(int tile)
+{
+    return tile == 1 || tile == 2 || tile == 3;
+}
+
+bool Snake::HadCollidedWithFruit(int tile)
+{
+    return tile == 100;
+}
+
+void Snake::AddNewSegment()
+{
+    auto it = body.begin();
+    body.insert(it, body[0]);
+}
+
+void Snake::CalculateCollisionsWithHazards(Stage& stage)
+{
+    Position globalPosition = CalculateHeadGlobalPosition(stage);
+    int currentTile = stage.GetTileAt(globalPosition);
+    hasCollided = HasCollidedWithBody() || HasCollidedWithWalls(stage) || HadCollidedWithHazards(currentTile);
+}
+
+void Snake::CalculateCollisionsWithFruits(Stage& stage)
+{
+    Position globalPosition = CalculateHeadGlobalPosition(stage);
+    int currentTile = stage.GetTileAt(globalPosition);
+
+    if (HadCollidedWithFruit(currentTile))
+        hasEatenFruitThisFrame = true;
+}
+
+void Snake::PlaceBodyAtPosition(Position position)
 {
     Segment head = body[body.size() - 1];
     int xOffset = head.GetX() - position.x;
@@ -117,12 +142,23 @@ Direction Snake::GetDirection()
     return movingDirection;
 }
 
-Position Snake::GetHeadPosition()
+Position Snake::GetHeadLocalPosition()
 {
-    Position pos;
-    Segment head = body[body.size() - 1];
-    pos.x = head.GetX();
-    pos.y = head.GetY();
-
+    Position pos = Position::MakePosition(GetHead().GetX(), GetHead().GetY());
     return pos;
+}
+
+bool Snake::HasEatenFruitThisFrame()
+{
+    return hasEatenFruitThisFrame;
+}
+
+void Snake::ClearHasEatenFruitThisFrame()
+{
+    hasEatenFruitThisFrame = false;
+}
+
+void Snake::ClearHasCollided()
+{
+    hasCollided = false;
 }
