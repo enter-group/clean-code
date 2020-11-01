@@ -1,0 +1,27 @@
+#include "Segment.h"
+
+bool Segment::operator==(Segment other) 
+{
+    return x == other.x && y == other.y;
+}
+
+bool Segment::operator==(Point2D other)
+{
+    return x == other.x && y == other.y;
+}
+
+void Segment::SetPosition(int x, int y)
+{
+    this->x = x;
+    this->y = y;
+}
+
+int Segment::GetX()
+{
+    return x;
+}
+
+int Segment::GetY()
+{
+    return y;
+}
