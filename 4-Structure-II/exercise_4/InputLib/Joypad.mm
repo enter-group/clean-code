@@ -29,19 +29,34 @@ Joypad::~Joypad()
 	inputManager = nullptr;
 }
 
-std::pair<InputEvent, JoypadErrorCodes> Joypad::UpdateUnbufferedDeviceState(uint8_t playerIndex)
+InputEvent Joypad::ReadButtons(uint8_t playerIndex)
 {
+	InputException ex("The controller index is invalid.");
 	if (joypads[playerIndex] == nullptr)
-		return make_pair(InputEvent::DummyEvent, JoypadErrorCodes::JoypadNoError);		
+		throw ex;
 	else
-		return make_pair(AcquireJoypadInput(playerIndex), JoypadErrorCodes::JoypadNoError);		
+		return AcquireJoypadInput(playerIndex);
 }
 
 InputEvent Joypad::AcquireJoypadInput(uint8_t index)
 {
 	joypads[index]->capture();
 
-	InputEvent event(ReadJoypadButtons(index).data(), ReadJoypadAxis(index).data(), index);
+	auto aButton = ReadJoypadButtons(index).data()[static_cast<int>(Button::ButtonA)];
+	auto bButton = ReadJoypadButtons(index).data()[static_cast<int>(Button::ButtonB)];
+	auto cButton = ReadJoypadButtons(index).data()[static_cast<int>(Button::ButtonC)]; 
+	auto startButton = ReadJoypadButtons(index).data()[static_cast<int>(Button::ButtonStart)];
+	auto verticalAxis = ReadJoypadAxis(index).data()[static_cast<int>(Axis::Vertical)];
+	auto horizontalAxis = ReadJoypadAxis(index).data()[static_cast<int>(Axis::Horizontal)];
+
+	InputEvent event = {index, 
+						aButton,
+						bButton,
+						cButton,
+						startButton,
+						horizontalAxis,
+						verticalAxis
+						};
 	return event;
 }
 
@@ -69,16 +84,11 @@ array<bool, 10> Joypad::ReadJoypadButtons(uint8_t index)
 	return buttons;
 }
 
-JoypadErrorCodes Joypad::InitializeJoypad()
+void Joypad::InitializeJoypad()
 {
+	CreateNativeWindow();
 	InitializeInputManager(windowHandle);
-
-	if (CreateJoypads() != JoypadErrorCodes::JoypadNoError)
-	{
-		return JoypadErrorCodes::JoypadNotFound;
-	}
-
-	return JoypadErrorCodes::JoypadNoError;
+	CreateJoypads();
 }
 
 void Joypad::InitializeInputManager(size_t windowHandle)
@@ -89,7 +99,7 @@ void Joypad::InitializeInputManager(size_t windowHandle)
 	this->inputManager->enableAddOnFactory(InputManager::AddOn_All);
 }
 
-JoypadErrorCodes Joypad::CreateJoypads()
+void Joypad::CreateJoypads()
 {
 	for(int i = 0; i < maxDevices; i++)
 		try
@@ -102,8 +112,6 @@ JoypadErrorCodes Joypad::CreateJoypads()
 			joypads[i] = nullptr;
 			continue;
 		}
-	
-	return JoypadErrorCodes::JoypadNoError;
 }
 
 size_t GetWindowId()
@@ -134,14 +142,12 @@ size_t InstantiateNSApp(NSApplication* NSApp)
 	return (size_t)InstantiateWindow(NSApp, appMenu, appName);
 }
 
-Joypad* Joypad::CreateNativeWindow()
+void Joypad::CreateNativeWindow()
 {
 	[NSAutoreleasePool new];
 	[NSApplication sharedApplication];
 	[NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 	windowHandle = (size_t)InstantiateNSApp(NSApp);
-
-    return this;
 }
 
 }

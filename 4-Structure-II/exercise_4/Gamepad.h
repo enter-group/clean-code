@@ -4,27 +4,27 @@ COPYRIGHT 2020 - ENTER. ALL RIGHTS RESERVED.
 
 #pragma once
 
+#include <iostream>
 #include <vector>
+#include <utility>
 
-#include "Button.h"
 #include "Direction.h"
+#include "GamepadException.h"
 
 #include "InputLib/Joypad.h"
+#include "InputLib/Button.h"
 
 class Gamepad
 {
 public:
-    Gamepad(uint8_t numberOfPlayers);
+    Gamepad();
     void ReadInput();
-    InputLib::InputEvent* GetPlayerEvent(uint8_t playerId);
-    Direction InputEvent2Direction(InputLib::InputEvent* event);
-    bool InputEvent2ButtonState(InputLib::InputEvent* event, Button button);
+    bool GetButtonState(InputLib::Button button);
+    Direction GetDirection();
 
 private:
-    void InitializeGamepad(uint8_t numberOfPlayers);
-    void InitializeEventBuffer();
+    void InitializeGamepad();
 
-    uint8_t numberOfPlayers;
-    std::vector<InputLib::InputEvent> joypadEvents;
+    InputLib::InputEvent joypadEvents;
     InputLib::Joypad* joypad;
 };

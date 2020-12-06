@@ -12,11 +12,11 @@ COPYRIGHT 2020 - ENTER. ALL RIGHTS RESERVED.
 #include "Direction.h"
 #include "GameConstants.h"
 #include "Stage.h"
-#include "Button.h"
 #include "Gamepad.h"
 
 #include "LandLib/MapGenerator.h"
 #include "InputLib/Joypad.h"
+#include "InputLib/Button.h"
 
 class GameLogic
 {

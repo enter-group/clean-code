@@ -5,8 +5,7 @@ using namespace InputLib;
 using namespace LandLib;
 
 GameLogic::GameLogic()
-    : gamepad(2)
-    , score(0)
+    : score(0)
     , direction(Direction::none)
 {
     GenerateMap();
@@ -167,28 +166,34 @@ void GameLogic::DetermineMovementDelay(Direction snakeDirection)
 
 void GameLogic::UpdatePauseFlag()
 {
-    if (gamepad.InputEvent2ButtonState(gamepad.GetPlayerEvent(0), Button::ButtonStart) && !startPressed)
+    if (gamepad.GetButtonState(Button::ButtonStart) && !startPressed)
     {
         startPressed = true;
         if (!snake.HasCollided())
             paused = !paused;
     }
-    if (!gamepad.InputEvent2ButtonState(gamepad.GetPlayerEvent(0), Button::ButtonStart) && startPressed)
+    if (!gamepad.GetButtonState(Button::ButtonStart) && startPressed)
         startPressed = false;
 }
 
 void GameLogic::ProcessPlayerInput()
 {
-    gamepad.ReadInput();
+    try
+    {
+        gamepad.ReadInput();
+        
+        if (gamepad.GetButtonState(Button::ButtonStart) && 
+            gamepad.GetButtonState(Button::ButtonC))
+            gameEnded = true;
 
-    if (gamepad.InputEvent2ButtonState(gamepad.GetPlayerEvent(0), Button::ButtonStart) && 
-        gamepad.InputEvent2ButtonState(gamepad.GetPlayerEvent(0), Button::ButtonC))
-        gameEnded = true;
-
-    direction = gamepad.InputEvent2Direction(gamepad.GetPlayerEvent(0));
-    running = gamepad.InputEvent2ButtonState(gamepad.GetPlayerEvent(0), Button::ButtonA);
-    UpdatePauseFlag();
-    
+        direction = gamepad.GetDirection();
+        running = gamepad.GetButtonState(Button::ButtonA);
+        UpdatePauseFlag();
+    }
+    catch (GamepadException ex)
+    {
+        return;
+    }
 }
 
 void GameLogic::RunGame()

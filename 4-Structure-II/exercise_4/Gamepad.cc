@@ -1,84 +1,58 @@
 #include "Gamepad.h"
 
 using namespace InputLib;
+using namespace std;
 
-Gamepad::Gamepad(uint8_t numberOfPlayers)
-    : numberOfPlayers(numberOfPlayers)
+Gamepad::Gamepad()
 {
-    InitializeGamepad(numberOfPlayers);
-    InitializeEventBuffer();
+    InitializeGamepad();
 }
 
-void Gamepad::InitializeEventBuffer()
+void Gamepad::InitializeGamepad()
 {
-    for (size_t i = 0; i < numberOfPlayers; i++)
-        joypadEvents.push_back(InputEvent::DummyEvent);
-}
-
-void Gamepad::InitializeGamepad(uint8_t numberOfPlayers)
-{
-    joypad = new Joypad(numberOfPlayers);
-    JoypadErrorCodes status = joypad->CreateNativeWindow()->InitializeJoypad();
-    
-    if (status != JoypadErrorCodes::JoypadNoError)
-        exit((uint8_t)status);
+    joypad = new Joypad(1);
+    joypad->InitializeJoypad();
 }
 
 void Gamepad::ReadInput()
 {
-    for (size_t i = 0; i < numberOfPlayers; i++)
+    try
     {
-        auto deviceState = joypad->UpdateUnbufferedDeviceState(i);
-        
-        if (deviceState.second == JoypadErrorCodes::JoypadNoError)
-            joypadEvents[i] = deviceState.first;
-        else
-            joypadEvents[i] = InputEvent::DummyEvent;
+        auto inputEvent = joypad->ReadButtons(0);
+        joypadEvents = inputEvent;
+    }
+    catch (InputException e)
+    {
+        GamepadException ex("Controller not found");
+        throw ex;
     }
 }
 
-Direction Gamepad::InputEvent2Direction(InputEvent* event)
+bool Gamepad::GetButtonState(InputLib::Button button)
 {
-    Direction direction = Direction::none;
-
-    // if the controller is not found or has been disconnected, the event might be null.
-    if (event != nullptr)
+    switch (button)
     {
-        // -32766  and 32768 means the button is fully pressed!
-        if (event->GetAxis5() == -32766)
-            direction = Direction::up;
-        if (event->GetAxis5() == 32768)
-            direction = Direction::down;
-
-        if (event->GetAxis4() == -32766)
-            direction = Direction::left;
-        if (event->GetAxis4() == 32768)
-            direction = Direction::right;
-    }
-
-    return direction;
-}
-
-bool Gamepad::InputEvent2ButtonState(InputEvent* event, Button button)
-{
-    // if the controller is not found or has been disconnected, the event might be null.
-    if (event != nullptr)
-    {
-        if (event->GetButtonByIndex(static_cast<uint8_t>(button)) == true)
-            return true;
-        else
-            return false;
+        case Button::ButtonA: return joypadEvents.isAButtonPressed;
+        case Button::ButtonB: return joypadEvents.isBButtonPressed;
+        case Button::ButtonC: return joypadEvents.isCButtonPressed;
+        case Button::ButtonStart: return joypadEvents.isStartButtonPressed;
     }
 
     return false;
 }
 
-InputEvent* Gamepad::GetPlayerEvent(uint8_t playerId)
+Direction Gamepad::GetDirection()
 {
-    if (playerId > numberOfPlayers)
-        return nullptr;
-    else if (joypadEvents[playerId].GetPlayerId() == -1)
-        return nullptr;
-    else
-        return &joypadEvents[playerId];
+    Direction direction = Direction::none;
+
+    if (joypadEvents.verticalAxis == -32766)
+        direction = Direction::up;
+    if (joypadEvents.verticalAxis == 32768)
+        direction = Direction::down;
+    if (joypadEvents.horizonalAxis == -32766)
+        direction = Direction::left;
+    if (joypadEvents.horizonalAxis == 32768)
+        direction = Direction::right;
+
+    return direction;
 }
